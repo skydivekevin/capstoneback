@@ -85,6 +85,108 @@ def add_instructor():
 # //////////////////////////      LOCATION ROUTES      ////////////////////////
 
 
+@app.route('/locations', methods=['GET'])
+def get_all_locations():
+    locations = mongo.db.locations
+
+    output = []
+
+    for q in locations.find({}):
+
+        output.append(
+            {'dzName': q['dzName'], 'dzCity': q['dzCity']})
+
+    return jsonify({'result': output})
+
+
+@app.route('/locations/<name>', methods=['GET'])
+def get_one_location(name):
+    locations = mongo.db.locations
+
+    q = locations.find_one({'dzName': name})
+
+    output = []
+
+    if q:
+        output = {'dzName': q['dzName'],
+                  'dzCity': q['dzCity'], 'dzState': q['dzState']}
+
+    return jsonify({'result': output})
+
+
+@app.route('/locations', methods=['POST'])
+def add_location():
+    locations = mongo.db.locations
+
+    dzName = request.json['dzName']
+    dzCity = request.json['dzCity']
+    dzState = request.json['dzState']
+
+    location_id = locations.insert(
+        {'dzState': dzState, 'dzName': dzName, 'dzCity': dzCity})
+    new_location = locations.find_one({'_id': location_id})
+
+    output = {'dzName': new_location['dzName'],
+              'dzCity': new_location['dzCity'],
+              'dzState': new_location['dzState']}
+
+    return jsonify({'result': output})
+
+
 # //////////////////////////      REVIEW ROUTES      ////////////////////////
+
+
+@app.route('/reviews', methods=['GET'])
+def get_all_reviews():
+    reviews = mongo.db.reviews
+
+    output = []
+
+    for q in reviews.find({}):
+
+        output.append(
+            {'reviewerName': q['reviewerName'], 'review': q['review'], 'locationJumped': q['locationJumped'], 'instructorFirst': q['instructorFirst'], 'instructorLast': q['instructorLast']})
+
+    return jsonify({'result': output})
+
+
+# @app.route('/reviews/<name>', methods=['GET'])
+# def get_one_location(name):
+#     locations = mongo.db.locations
+
+#     q = locations.find_one({'dzName': name})
+
+#     output = []
+
+#     if q:
+#         output = {'dzName': q['dzName'],
+#                   'dzCity': q['dzCity'], 'dzState': q['dzState']}
+
+#     return jsonify({'result': output})
+
+
+@app.route('/reviews', methods=['POST'])
+def add_review():
+    reviews = mongo.db.reviews
+
+    locationJumped = request.json['locationJumped']
+    instructorFirst = request.json['instructorFirst']
+    instructorLast = request.json['instructorLast']
+    review = request.json['review']
+    reviewerName = request.json['reviewerName']
+
+    review_id = reviews.insert(
+        {'instructorLast': instructorLast, 'locationJumped': locationJumped, 'instructorFirst': instructorFirst, 'review': review, 'reviewerName': reviewerName})
+    new_review = reviews.find_one({'_id': review_id})
+
+    output = {'locationJumped': new_review['locationJumped'],
+              'instructorFirst': new_review['instructorFirst'],
+              'instructorLast': new_review['instructorLast'],
+              'review': new_review['review'],
+              'reviewerName': new_review['reviewerName']}
+
+    return jsonify({'result': output})
+
+
 if __name__ == '__main__':
     app.run(debug=True)
