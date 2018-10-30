@@ -31,12 +31,8 @@ def home():
 #     return "login page"
 
 
-# @app.route("/add", methods=['POST'])
-# def add():
-#     instructors = mongo.db.instructors
-#     instructors.insert({'firstName': 'Ballsack'})
-#     return 'added instructor!'
 # //////////////////////////      INSTRUCTOR ROUTES      ////////////////////////
+
 
 @app.route('/instructors', methods=['GET'])
 def get_all_instructors():
@@ -73,13 +69,15 @@ def add_instructor():
 
     firstName = request.json['firstName']
     lastName = request.json['lastName']
+    currentDZ = request.json['currentDZ']
 
     instructor_id = instructor.insert(
-        {'firstName': firstName, 'lastName': lastName})
+        {'currentDZ': currentDZ, 'firstName': firstName, 'lastName': lastName})
     new_instructor = instructor.find_one({'_id': instructor_id})
 
     output = {'firstName': new_instructor['firstName'],
-              'lastName': new_instructor['lastName']}
+              'lastName': new_instructor['lastName'],
+              'currentDZ': new_instructor['currentDZ']}
 
     return jsonify({'result': output})
 
