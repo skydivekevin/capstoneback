@@ -20,17 +20,6 @@ CORS(app)
 def home():
     return "Home route"
 
-
-# @app.route("/addinstructor")
-# def addInstructor():
-#     return "add instructor route"
-
-
-# @app.route("/login")
-# def login():
-#     return "login page"
-
-
 # //////////////////////////      INSTRUCTOR ROUTES      ////////////////////////
 
 
@@ -96,6 +85,20 @@ def get_all_locations():
         output.append(
             {'dzName': q['dzName'], 'dzCity': q['dzCity']})
 
+    return jsonify({'result': output})
+
+
+@app.route('/dznames', methods=['GET'])
+def get_all_dzNames():
+    locations = mongo.db.locations
+
+    output = []
+
+    for q in locations.find({}):
+
+        output.append(
+            {'dzName': q['dzName']})
+    # return output
     return jsonify({'result': output})
 
 
