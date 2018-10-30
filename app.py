@@ -1,7 +1,5 @@
-import os
-import uuid
 
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 
@@ -23,18 +21,72 @@ def home():
     return "Home route"
 
 
-@app.route("/addinstructor")
-def addInstructor():
-    return "add instructor route"
+# @app.route("/addinstructor")
+# def addInstructor():
+#     return "add instructor route"
 
 
-@app.route("/login")
-def login():
-    return "login page"
+# @app.route("/login")
+# def login():
+#     return "login page"
 
 
-# @app.route("/add")
+# @app.route("/add", methods=['POST'])
 # def add():
-#     instructor = mongo.db.instructors
-#     instructor.insert({'firstName': 'Ballsack'})
+#     instructors = mongo.db.instructors
+#     instructors.insert({'firstName': 'Ballsack'})
 #     return 'added instructor!'
+# //////////////////////////      INSTRUCTOR ROUTES      ////////////////////////
+
+@app.route('/instructors', methods=['GET'])
+def get_all_instructors():
+    instructor = mongo.db.instructors
+
+    output = []
+
+    for q in instructor.find({}):
+
+        output.append(
+            {'First name': q['firstName'], 'Last name': q['lastName']})
+
+    return jsonify({'result': output})
+
+
+@app.route('/instructors/<name>', methods=['GET'])
+def get_one_instructor(name):
+    instructor = mongo.db.instructors
+
+    q = instructor.find_one({'firstName': name})
+
+    output = []
+
+    if q:
+        output = {'first name': q['firstName'],
+                  'last name': q['lastName'], 'Current DZ': q['currentDZ']}
+
+    return jsonify({'result': output})
+
+
+@app.route('/instructors', methods=['POST'])
+def add_instructor():
+    instructor = mongo.db.instructors
+
+    firstName = request.json['firstName']
+    lastName = request.json['lastName']
+
+    instructor_id = instructor.insert(
+        {'firstName': firstName, 'lastName': lastName})
+    new_instructor = instructor.find_one({'_id': instructor_id})
+
+    output = {'firstName': new_instructor['firstName'],
+              'lastName': new_instructor['lastName']}
+
+    return jsonify({'result': output})
+
+
+# //////////////////////////      LOCATION ROUTES      ////////////////////////
+
+
+# //////////////////////////      REVIEW ROUTES      ////////////////////////
+if __name__ == '__main__':
+    app.run(debug=True)
