@@ -167,19 +167,19 @@ def get_all_reviews():
     return jsonify({'result': output})
 
 
-# @app.route('/reviews/<name>', methods=['GET'])
-# def get_one_location(name):
-#     locations = mongo.db.locations
+@app.route('/reviews/<first>/<last>', methods=['GET'])
+def get_reviews_for_instructor(first, last):
+    reviews = mongo.db.reviews
 
-#     q = locations.find_one({'dzName': name})
+    q = reviews.find_one({'instructorFirst': first, 'instructorLast': last})
 
-#     output = []
+    output = []
 
-#     if q:
-#         output = {'dzName': q['dzName'],
-#                   'dzCity': q['dzCity'], 'dzState': q['dzState']}
+    if q:
+        output = {'instructorFirst': q['instructorFirst'], 'instructorLast': q['instructorLast'],
+                  'review': q['review']}
 
-#     return jsonify({'result': output})
+    return jsonify({'result': output})
 
 
 @app.route('/reviews', methods=['POST'])
