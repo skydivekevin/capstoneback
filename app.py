@@ -37,17 +37,31 @@ def get_all_instructors():
     return jsonify({'result': output})
 
 
-@app.route('/instructors/<name>', methods=['GET'])
-def get_one_instructor(name):
-    instructor = mongo.db.instructors
+# @app.route('/instructors/<name>', methods=['GET'])
+# def get_one_instructor(name):
+#     instructor = mongo.db.instructors
 
-    q = instructor.find_one({'firstName': name})
+#     q = instructor.find_one({'firstName': name})
+
+#     output = []
+
+#     if q:
+#         output = {'first name': q['firstName'],
+#                   'last name': q['lastName'], 'Current DZ': q['currentDZ']}
+
+#     return jsonify({'result': output})
+
+
+@app.route('/instructors/<dz>', methods=['GET'])
+def get_all_instructors_from_dz(dz):
+    instructor = mongo.db.instructors
 
     output = []
 
-    if q:
-        output = {'first name': q['firstName'],
-                  'last name': q['lastName'], 'Current DZ': q['currentDZ']}
+    for q in instructor.find({'currentDZ': dz}):
+
+        output.append(
+            {'firstName': q['firstName'], 'lastName': q['lastName']})
 
     return jsonify({'result': output})
 
