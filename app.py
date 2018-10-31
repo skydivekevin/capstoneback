@@ -171,13 +171,13 @@ def get_all_reviews():
 def get_reviews_for_instructor(first, last):
     reviews = mongo.db.reviews
 
-    q = reviews.find_one({'instructorFirst': first, 'instructorLast': last})
-
     output = []
 
-    if q:
-        output = {'instructorFirst': q['instructorFirst'], 'instructorLast': q['instructorLast'],
-                  'review': q['review']}
+    for q in reviews.find({'instructorFirst': first, 'instructorLast': last}):
+
+        output.append(
+            {'instructorFirst': q['instructorFirst'], 'instructorLast': q['instructorLast'],
+             'review': q['review']})
 
     return jsonify({'result': output})
 
