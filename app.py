@@ -182,6 +182,20 @@ def get_reviews_for_instructor(first, last):
     return jsonify({'result': output})
 
 
+@app.route('/reviews/<userName>', methods=['GET'])
+def get_reviews_for_username(userName):
+    reviews = mongo.db.reviews
+
+    output = []
+
+    for q in reviews.find({'userName': userName}):
+
+        output.append(
+            {'review': q['review']})
+
+    return jsonify({'result': output})
+
+
 @app.route('/reviews', methods=['POST'])
 def add_review():
     reviews = mongo.db.reviews
@@ -203,6 +217,62 @@ def add_review():
               'reviewerName': new_review['reviewerName']}
 
     return jsonify({'result': output})
+
+    # /////////////////////////////////    USERS ROUTES /////////////////////////////
+
+
+@app.route('/users/<userName>/<password>', methods=['GET'])
+def get_user_login(userName, password):
+    users = mongo.db.users
+
+    output = []
+
+    for q in users.find({'userName': userName, 'password': password}):
+
+        output.append(
+            {'firstName': q['firstName'], 'lastName': q['lastName']})
+
+    return jsonify({'result': output})
+
+
+@app.route('/users/<userName>', methods=['GET'])
+def get_user_info(userName):
+    users = mongo.db.users
+
+    output = []
+
+    for q in users.find({'userName': userName}):
+
+        output.append(
+            {'firstName': q['firstName'], 'lastName': q['lastName'], 'userName': q['userName'], 'bio': q['bio'], 'currentDZ': q['currentDZ']})
+
+    return jsonify({'result': output})
+
+
+@app.route('/users/<userName>', methods=['POST'])
+def add_user_info(userName):
+    users = mongo.db.users
+
+    currentDZ = request.json['currentDZ']
+    firstName = request.json['firstName']
+    lastName = request.json['lastName']
+    userName = request.json['userName']
+    password = request.json['password']
+    bio = request.json['bio']
+    photo = request.json['photo']
+
+    user_id = users.insert(
+        {'firstName': firstName, 'lastName': lastName, 'currentDZ': currentDZ, 'userName': userName, 'password': password, 'bio': bio, 'photo': photo})
+    new_user = users.find_one({'_id': user_id})
+
+    # output = {'locationJumped': new_user['locationJumped'],
+    #           'instructorFirst': new_user['instructorFirst'],
+    #           'instructorLast': new_user['instructorLast'],
+    #           'user': new_user['review'],
+    #           'reviewerName': new_user['reviewerName']}
+
+    # return jsonify({'result': output})
+    return ('working')
 
 
 if __name__ == '__main__':
